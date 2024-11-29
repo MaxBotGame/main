@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Coin Flip Animation</title>
+    <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
+        body, html {
+            margin: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-image: url('1212.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .hidden {
+            display: none;
+        }
+        #container3D {
+            width: 100%;
+            height: 80%;
+        }
+      #flipButton {
+        font-size: 40px;
+        font-weight: bold;
+        padding: 30px 60px;
+        width: 325px;
+        border-radius: 25px;
+        background: linear-gradient(145deg, #8a2be2 0%, #9370db 100%);
+        box-shadow: 0 10px #6a0dad, 0 -10px #9370db inset; /* Увеличение высоты тени для более сильного 3D-эффекта */
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+        font-family: 'Intro', sans-serif;
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: 60%;
+        transform: translateX(-50%);
+        touch-action: manipulation;
+    }
+
+    #flipButton:hover {
+        background: linear-gradient(145deg, #9370db 0%, #8a2be2 100%);
+        box-shadow: 0 12px #6a0dad, 0 -12px #8a2be2 inset; /* Углубленная тень при наведении для более выраженного 3D-эффекта */
+        transform: translateX(-50%) translateY(-5px); /* Увеличенный подъем кнопки при наведении */
+    }
+
+       #flipButton.active {
+        box-shadow: 0 5px #6a0dad, 0 -5px #9370db inset; /* Сжатие теней при нажатии */
+        transform: translateX(-50%) translateY(1px); /* Уменьшенное смещение при нажатии */
+    }
+
+    #flipButton:focus {
+        box-shadow: 0 5px #6a0dad, 0 -5px #9370db inset;
+        transform: translateX(-50%) translateY(1px);
+    }
+
+
+
+
+
+        #resultText {
+            animation: fadeInScaleUp 0.5s ease-out forwards;
+            position: absolute;
+            top: 19%;
+            left: 30%;
+            transform: translateX(-50%);
+            font-size: 106px;
+            color: white;
+            display: none;
+            font-family: 'Intro';
+        }
+
+        @keyframes fadeInScaleUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+                .marquee {
+            margin-right: 30px;
+            width: 100%;
+            overflow: hidden;
+            background: #1d2671;
+            line-height: 50px;
+            white-space: nowrap;
+            position: absolute;
+            z-index: 10;
+            font-family: 'Intro', sans-serif;
+        }
+
+        .marquee p {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee span {
+            opacity: 0;
+            animation: bounceIn 0.5s infinite alternate;
+            display: inline-block;
+            font-size: 6vw;
+            color: white;
+            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+            animation-delay: calc(var(--n) * 0.1s); /* Delay based on the position of the letter */
+        }
+        .marquee .text-segment {
+            margin-right: 60px; /* Добавляем отступ справа между текстовыми блоками */
+            display: inline-block;
+            font-size: 6vw;
+            color: white;
+            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+            opacity: 1; /* Убедимся, что текст видим */
+        }
+
+        /* Keyframes for the text animations */
+        @keyframes bounceIn {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-20px); opacity: 0.5; }
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
+
+        #nsgocio-container {
+            display: flex;
+            align-items: center; /* Центрирование элементов по вертикали */
+            font-family: 'Intro', sans-serif;
+        }
+
+        #tg-icon {
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            left: 13%;
+        }
+
+        #nsgocio-text {
+            position: absolute;
+            left: 27%;
+            font-size: 106px; /* Большой размер текста */
+            color: white;
+            margin-left: 1px; /* Отступ текста от иконки */
+            text-shadow: 0 0 10px #black, 0 0 20px #black, 0 0 30px #black, 0 0 40px #black; /
+        }
+        #notification {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%; /* Уменьшенная ширина для широкого вида */
+             height: 90px; /* Фиксированная высота */
+            background: linear-gradient(145deg, #6a3093, #a044ff);
+            color: white;
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            border: 1px solid #a044ff;
+            transition: top 1s ease-in-out, opacity 1s ease-in-out;
+            text-align: left;
+            z-index: 2000;
+            opacity: 0;
+        }
+                 #notification.show {
+            top: 10%; /* Целевая позиция в пределах видимости */
+            opacity: 1;
+        }
+
+        #notification-icon {
+            float: left;
+            width: 110px;
+            height: 110px;
+            margin-left: 10px; /* Большее смещение вправо для текста */
+            margin-top:-11px; /* Ниже */
+        }
+
+        #notification-content {
+            margin-left: 100px; /* Большее смещение вправо для текста */
+            margin-top: 20px; /* Смещение текста ниже */
+        }
+
+        #notification-content h4 {
+            margin: 0;
+            padding: 0;
+            font-size: 40px;
+            font-family: 'Intro', sans-serif;
+            font-weight: bold; /* Более жирное начертание для заголовка */
+            margin-top:-13px; /* Ниже */
+        }
+
+        #notification-content p {
+            margin: 5px 0 0;
+            font-size: 20px;
+            font-style: italic; /* Курсивное начертание для абзаца */
+            font-family: 'Intro', sans-serif;
+             margin-top: 5px; /* Ниже */
+        }
+
+        #notification.show {
+            display: block;
+            opacity: 1;
+            top: 10%; /* Целевая позиция в пределах видимости */
+        }
+        #returnButton {
+            font-size: 40px;
+            font-weight: bold;
+            padding: 30px 50px; /* Уменьшение padding для выравнивания текста */
+            width: 325px;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #8a2be2 0%, #9370db 100%);
+            box-shadow: 0 10px #6a0dad, 0 -10px #9370db inset; /* Увеличение высоты тени для более сильного 3D-эффекта */
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            font-family: 'Intro', sans-serif;
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 70%; /* Позиция ниже кнопки "БРОСИТЬ" */
+            transform: translateX(-50%);
+            touch-action: manipulation;
+        }
+
+        #returnButton:hover {
+            background: linear-gradient(145deg, #9370db 0%, #8a2be2 100%);
+            box-shadow: 0 12px #6a0dad, 0 -12px #8a2be2 inset; /* Углубленная тень при наведении для более выраженного 3D-эффекта */
+            transform: translateX(-50%) translateY(-5px); /* Увеличенный подъем кнопки при наведении */
+        }
+
+        #returnButton.active {
+            box-shadow: 0 5px #6a0dad, 0 -5px #9370db inset; /* Сжатие теней при нажатии */
+            transform: translateX(-50%) translateY(1px); /* Уменьшенное смещение при нажатии */
+        }
+
+        #returnButton:focus {
+            box-shadow: 0 5px #6a0dad, 0 -5px #9370db inset;
+            transform: translateX(-50%) translateY(1px);
+        }
+
+    </style>
+</head>
+<body class="hidden">
+    <div id="notification" class="hidden">
+    <img src="tg.svg" alt="Telegram Icon" id="notification-icon">
+    <div id="notification-content">
+        <h4>GOODWIN</h4>
+        <p>You won voucher!</p>
+    </div>
+</div>
+    <div class="marquee">
+        <p>
+            <span class="text-segment">GOODWIN</span>
+        </p>
+    </div>
+    <div id="container3D"></div>
+    <button id="flipButton">THROW AWAY</button>
+    <button id="returnButton" onclick="location.href='https://martinthecash.github.io/main/'">Return</button>
+
+    <div id="resultText"></div>
+    <div id="nsgocio-container">
+</div>
+
+    <audio id="not-sound" src="notify.mp3"></audio><!-- Звуковой эффект для воспроизведения -->
+    <audio id="cl-sound" src="close.mp3"></audio>
+    <audio id="pl-sound" src="22.mp3"></audio>
+    <script type="module">
+        import { TWEEN } from 'https://unpkg.com/three@0.139.0/examples/jsm/libs/tween.module.min.js';
+        import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
+        import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
+        import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById("container3D").appendChild(renderer.domElement);
+
+        // Очень сильный рассеянный свет для общей освещенности
+        scene.add(new THREE.AmbientLight(0xffffff, 1));  // Сильно увеличена интенсивность
+
+        // Функция для добавления направленного света с экстремальной интенсивностью
+        const addDirectionalLight = (x, y, z, intensity) => {
+          const light = new THREE.DirectionalLight(0xffffff, intensity);
+          light.position.set(x, y, z);
+          scene.add(light);
+        }
+
+        // Функция для добавления точечного света с экстремальной интенсивностью
+        const addPointLight = (x, y, z, intensity) => {
+          const light = new THREE.PointLight(0xffffff, intensity, 1200);
+          light.position.set(x, y, z);
+          scene.add(light);
+        }
+
+        // Добавляем направленные и точечные света с очень высокой интенсивностью
+        addDirectionalLight(75, 75, 75, 10);
+        addDirectionalLight(-75, 75, 75, 10);
+        addPointLight(0, 75, 25, 8);
+        addPointLight(0, -75, 25, 8);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 0, 100);
+        controls.update();
+
+        let coin = null;
+        const loader = new GLTFLoader();
+        loader.load('scene.gltf', function (gltf) {
+            coin = gltf.scene;
+            coin.scale.set(15, 15, 15);
+            coin.position.y = 13;
+            scene.add(coin);
+            document.body.classList.remove('hidden');
+            animate();
+        }, undefined, function (error) {
+            console.error("An error occurred while loading the model", error);
+        });
+
+        let spinning = true;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (spinning && coin) {
+                coin.rotation.y += 0.03;
+            }
+            TWEEN.update();
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const flipButton = document.getElementById("flipButton");
+    const returnButton = document.getElementById("returnButton");
+    const flipSound = new Audio('flip.mp3');
+
+    flipButton.addEventListener("click", () => {
+        executeFlip();
+    });
+
+    flipButton.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Предотвратить стандартное поведение для touch (скроллинг и т.д.)
+        flipButton.classList.add("active");
+    });
+
+    flipButton.addEventListener("touchend", (e) => {
+        flipButton.classList.remove("active");
+        executeFlip(); // Вызов функции при завершении касания
+    });
+
+    returnButton.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Предотвратить стандартное поведение для touch (скроллинг и т.д.)
+        returnButton.classList.add("active");
+    });
+
+    returnButton.addEventListener("touchend", (e) => {
+        returnButton.classList.remove("active");
+        location.href = 'https://martinthecash.github.io/main/'; // Вызов функции при завершении касания
+    });
+
+    function executeFlip() {
+        if (coin) {
+            document.getElementById('pl-sound').play();
+            document.getElementById("resultText").style.display = 'none';
+            spinning = false;
+            coin.rotation.set(0, 0, 0);
+
+            const upAndDownTween = new TWEEN.Tween(coin.position)
+                .to({ y: [50, 13] }, 2000)
+                .easing(TWEEN.Easing.Quadratic.InOut);
+
+            const rotationTween = new TWEEN.Tween(coin.rotation)
+                .to({ y: coin.rotation.y + Math.PI * 10 }, 2000)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onComplete(() => {
+                    const result = Math.random() < 0.5 ? "Орел" : "Решка";
+                    const resultText = document.getElementById("resultText");
+                    resultText.textContent = result;
+                    resultText.style.display = 'block';
+                    resultText.style.left = result === "Орел" ? '34%' : '30%';
+                    resultText.classList.add("fadeInScaleUp");
+                });
+
+            setTimeout(() => {
+                flipSound.play();
+            }, 800);
+
+            upAndDownTween.start();
+            rotationTween.start();
+        }
+    }
+});
+
+        window.addEventListener("resize", function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        function showNotification() {
+            document.getElementById('not-sound').play();
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block'; // Сразу делаем элемент блочным, чтобы начать анимацию
+            notification.style.top = '-10%'; // Начальное положение для анимации появления
+            notification.style.opacity = '0'; // Начальная прозрачность
+
+            // Плавное появление
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.top = '10%';
+            }, 10);
+
+            // Планирование плавного исчезновения
+            setTimeout(() => {
+                hideNotification();
+            }, 10000); // Отображаем уведомление в течение 10 секунд
+        }
+
+        function hideNotification() {
+            document.getElementById('cl-sound').play();
+            const notification = document.getElementById('notification');
+            notification.style.opacity = '0';
+            notification.style.top = '-10%';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 1000); // Даем время на завершение анимации исчезновения
+        }
+
+        function startRandomNotification() {
+            showNotification();
+            setTimeout(startRandomNotification,  150000); // Следующее уведомление через 20 секунд
+        }
+
+        document.addEventListener('DOMContentLoaded', startRandomNotification);
+        document.addEventListener("DOMContentLoaded", function() {
+        var flipButton = document.getElementById("flipButton");
+
+        // Добавить класс 'active' при начале касания
+        flipButton.addEventListener("touchstart", function(e) {
+            e.preventDefault(); // Предотвратить любое другое действие по умолчанию
+            this.classList.add("active");
+        });
+
+        // Удалить класс 'active' при окончании касания
+        flipButton.addEventListener("touchend", function(e) {
+            this.classList.remove("active");
+        });
+    });
+
+    </script>
+</body>
+</html> """
